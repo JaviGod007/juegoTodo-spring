@@ -16,15 +16,17 @@ import jakarta.servlet.http.HttpServletRequest;
 @RestControllerAdvice
 public class ManejadorErrores {
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity> manejarValidacion(
-            MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity manejarValidacion(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
 
-        Map<String, String> campos = new HashMap<>();
+        Map campos = new HashMap();
         ex.getBindingResult().getFieldErrors()
                 .forEach(err -> campos.put(err.getField(), err.getDefaultMessage()));
 
-        Map<String, Object> body = new HashMap<>();
+        Map body = new HashMap();
         body.put("status", 400);
         body.put("error", "Bad Request");
         body.put("mensaje", "Hay campos inválidos");
@@ -34,8 +36,9 @@ public class ManejadorErrores {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @SuppressWarnings("rawtypes")
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity> manejarJsonMalFormado(HttpServletRequest request) {
+    public ResponseEntity manejarJsonMalFormado(HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "status", 400,
                 "error", "Bad Request",
@@ -44,8 +47,9 @@ public class ManejadorErrores {
         ));
     }
 
+    @SuppressWarnings("rawtypes")
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity> manejarMediaType(HttpServletRequest request) {
+    public ResponseEntity manejarMediaType(HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(Map.of(
                 "status", 415,
                 "error", "Unsupported Media Type",
